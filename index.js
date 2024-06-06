@@ -192,15 +192,18 @@ function tabChange(){
 
 // Fuction that is invoked upon input is given for cityName
 function submitData(){
-    const cityName = document.getElementById('city-name').value;
+    const searchInput = document.getElementById('city-name');
+    const cityName = searchInput.value;
+    searchInput.value = '';
     const errMeassagePara = document.getElementById('err-message');
-
+    
     if(cityName.trim() === ''){
         errMeassagePara.innerHTML = '*Enter valid city name';
     }
     else{
         errMeassagePara.innerHTML = '';
         fetchSearchData(cityName)
+        // console.log(cityName);
     }
     
     return false;
