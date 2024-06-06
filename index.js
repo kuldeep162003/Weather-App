@@ -3,6 +3,7 @@ const YourWeatherContainer = document.querySelector('.your-weather-content');
 const loadingContainer = document.querySelector('.loading-page');
 const searchWeatherContainer = document.querySelector('.search-weather-content');
 
+// Functions for displaying and hiding pages
 function makeGrantAccessContainerActive(){
     if(!grantAccessContainer.classList.contains('active')){
         grantAccessContainer.classList.add('active');
@@ -17,7 +18,6 @@ function makeGrantAccessContainerActive(){
         searchWeatherContainer.classList.remove('active')
     }
 }
-
 function makeYourWeatherContainerActive(){
     if(grantAccessContainer.classList.contains('active')){
         grantAccessContainer.classList.remove('active');
@@ -32,7 +32,6 @@ function makeYourWeatherContainerActive(){
         searchWeatherContainer.classList.remove('active')
     }
 }
-
 function makeLoadingContainerActive(){
     if(grantAccessContainer.classList.contains('active')){
         grantAccessContainer.classList.remove('active');
@@ -47,7 +46,6 @@ function makeLoadingContainerActive(){
         searchWeatherContainer.classList.remove('active')
     }
 }
-
 function makeSearchWeatherContainerActive(){
     if(grantAccessContainer.classList.contains('active')){
         grantAccessContainer.classList.remove('active');
@@ -66,23 +64,25 @@ function makeSearchWeatherContainerActive(){
 makeLoadingContainerActive();
 getfromSessionStorage();
 
+// Fuction for accessing current location
 async function getfromSessionStorage() {
     // console.log(sessionStorage);
     const localCoordinates = sessionStorage.getItem("user-coordinates");
 
     if(!localCoordinates) {
-        //agar local coordinates nahi mile
+        //If local coordinates are not found
         makeGrantAccessContainerActive();
     }
     else {
+        // If local coordinates are found
         const coordinates = await JSON.parse(localCoordinates);
-        // console.log('Hello : ', coordinates.lat);
         await fetchData(coordinates.lat, coordinates.long);
         makeYourWeatherContainerActive();
     }
 
 }
 
+// Function for calling OpenWeatherAPI to get weather data
 const foundEle = document.querySelector('.found');
 const notFoundEle = document.querySelector('.not-found');
 async function fetchData(lat, long){
@@ -111,40 +111,42 @@ async function fetchData(lat, long){
     }
 }
 
+// Function for setting weather data in html Elements
 function setData(data){
-    // show city name
+    // set city name
     const city = document.querySelector('.city');
     city.innerHTML = data?.name;
     
-    // show country flag
+    // set country flag
     const country = document.querySelector('.country');
     country_code = data?.sys?.country;
     country.setAttribute('src', `https://flagcdn.com/144x108/${data?.sys?.country.toLowerCase()}.png`);
     
-    // show weather discription
+    // set weather discription
     const desc = document.querySelector('.weather-desc');
     const icon = document.querySelector('.weather-icon');
     desc.innerHTML = data?.weather[0]?.description;
     icon.setAttribute('src', `http://openweathermap.org/img/w/${data?.weather?.[0]?.icon}.png`);
     
-    // show temperature
+    // set temperature
     const temp = document.querySelector('.temperature-value');
     let kelvinTemp = data?.main?.temp;
     temp.innerHTML = (kelvinTemp-273.15).toFixed(2);
 
-    // show windspeed
+    // set windspeed
     const ws = document.querySelector('.windspeed-value');
     ws.innerHTML = data?.wind?.speed;
     
-    // show humidity
+    // set humidity
     const hum = document.querySelector('.humidity-value');
     hum.innerHTML = data?.main?.humidity;
 
-    // show clouds
+    // set clouds
     const clouds = document.querySelector('.clouds-value');
     clouds.innerHTML = data?.clouds?.all;
 }
 
+// Function for accessing used location using Geolocation API
 function askPermission(){
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(getcoords, handleErr);
@@ -172,7 +174,7 @@ function askPermission(){
     }
 }
 
-
+// Function for handling tabchanges between yourWeather and searchWeather
 function tabChange(){
     makeLoadingContainerActive();
 
@@ -188,6 +190,7 @@ function tabChange(){
     }
 }
 
+// Fuction that is invoked upon input is given for cityName
 function submitData(){
     const cityName = document.getElementById('city-name').value;
     const errMeassagePara = document.getElementById('err-message');
@@ -198,12 +201,12 @@ function submitData(){
     else{
         errMeassagePara.innerHTML = '';
         fetchSearchData(cityName)
-        // console.log(cityName);
     }
     
     return false;
 }
 
+// Function for fetching weather data of input city
 async function fetchSearchData(cityName){
     
     if(!loadingContainer.classList.contains('active')){
@@ -218,7 +221,6 @@ async function fetchSearchData(cityName){
         const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}`);
         const data = await response.json();
         
-        // console.log(data);
         setData(data);
         if(!foundEle.classList.contains('display')){
             foundEle.classList.add('display')
